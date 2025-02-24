@@ -2,234 +2,129 @@ from random import randint, choice
 
 
 class Astronaut:
-
-    def __init__(self, name, spaceship = None):
+    def __init__(self, name, spaceship):
         self.name = name
         self.oxygen = 100
         self.energy = 100
         self.inventory = []
         self.spaceship = spaceship
 
-    def mine_resources(self):
-        self.home = House()
-
-    def get_car(self):
-        self.car = Auto(brands_of_car)
-
-    def get_job(self):
-
-        if self.car.drive():
-            pass
+    def mine_resources(self, planet):
+        if planet.resources:
+            resource = choice(planet.resources)
+            self.inventory.append(resource)
+            print(f"{self.name} добув {resource} на планеті {planet.name}.")
         else:
-            self.to_repair()
-            return
+            print(f"На планеті {planet.name} немає ресурсів.")
 
-        self.job = Job(job_list)
-
-    def eat(self):
-
-        if self.home.food <= 0:
-            self.shopping("food")
-
+    def upgrade_ship(self, resource):
+        if resource in self.inventory:
+            self.spaceship.add_upgrade(resource)
+            self.inventory.remove(resource)
+            print(f"Корабель {self.spaceship.name} покращено за допомогою {resource}!")
         else:
-            if self.satiety >= 100:
-                self.satiety = 100
-                return
+            print("У вас немає цього ресурсу.")
 
-            self.satiety += 5
-            self.home.food -= 5
-
-    def work(self):
-        if self.car.drive():
-            pass
-
+    def communicate_with_aliens(self, alien):
+        if alien.attitude == "дружній":
+            print(f"{alien.species} вітають {self.name} і пропонують обмін!")
+            alien.trade(self)
         else:
+            print(f"{alien.species} атакують!")
+            alien.attack(self)
 
-            if self.car.fuel < 20:
-                self.shopping("fuel")
-                return
-
-            else:
-                self.to_repair()
-
-        self.money += self.job.salary
-        self.gladness -= self.job.gladness_less
-        self.satiety -= 4
-
-    def shopping(self, manage):
-        if self.car.drive():
-            pass
-
+    def explore(self, planet):
+        print(f"{self.name} досліджує {planet.name}...")
+        if planet.aliens:
+            self.communicate_with_aliens(choice(planet.aliens))
         else:
-            if self.car.fuel < 20:
-                manage = "fuel"
+            self.mine_resources(planet)
 
-            else:
-                self.to_repair()
-                return
-
-        if manage == "fuel":
-            print("I bought fuel")
-            self.money -= 100
-            self.car.fuel += 100
-
-        elif manage == "food":
-            print("Bought food")
-            self.money -= 50
-            self.home.food += 50
-
-        elif manage == "delicasies":
-            print("Hooray! delicious!")
-            self.gladness += 10
-            self.satiety += 2
-            self.money -= 15
-
-    def chill(self):
-        self.gladness += 10
-        self.home.mess += 5
-
-    def clean_home(self):
-        self.gladness -= 5
-        self.home.mess = 0
-
-    def to_repair(self):
-        self.car.strength += 100
-        self.money -= 50
-
-    def day_info(self, day):
-        print(f"Today the {day} of {self.name}'s life")
-        print(f"Money - {self.money}")
-        print(f"Satiety - {self.satiety}")
-        print(f"Gladness - {self.gladness}")
-        print(f"Food in home - {self.home.food}")
-        print(f"Mess in home - {self.home.mess}")
-        print(f"Car fuel - {self.car.fuel}")
-        print(f"Car strength - {self.car.strength}")
-        print("\n")
-
-    def is_alive(self):
-        if self.gladness < 0:
-            print("Depression..")
-            return False
-
-        if self.satiety < 0:
-            print("Dead..")
-            return False
-
-        if self.money < -500:
-            print("Bankrupt..")
-            return False
-
-        # if self.home.mess > 50:
-        #     print("Home is Dump")
-        #     return False
-
-    def live(self, day):
-
-        if self.is_alive() == False:
-            return False
-
-        if self.home is None:
-            print("Settled in the house")
-            self.get_home()
-
-        if self.car is None:
-            self.get_car()
-            print(f"I bought a car {self.car.brand}")
-
-        if self.job is None:
-            self.get_job()
-            print(f"i goint to get a job {self.job.job} with salary {self.job.salary}")
-
-        self.day_info(day)
-
-        dice = randint(1, 4)
-
-        if self.satiety < 20:
-            print("I'll go eat")
-            self.eat()
-
-        elif self.gladness < 20:
-            if self.home.mess > 20:
-                print("Oh noo, let's clean and then chill")
-                self.clean_home()
-
-            else:
-                print("Let's chill")
-                self.chill()
-
-        elif self.money < 0:
-            print("Cry..")
-            print("Start working")
-            self.work()
-
-        elif self.car.strength < 15:
-            print("I need to repait my car")
-            self.to_repair()
-
-        elif dice == 1:
-            print("Let's chill")
-            self.chill()
-
-        elif dice == 2:
-            print("Start working")
-            self.work()
-
-        elif dice == 3:
-            print("cleaning home")
-            self.clean_home()
-
-        elif dice == 4:
-            print("Time for treats!")
-            self.shopping(manage="delicacies")
+    def survive_in_space(self):
+        if self.oxygen <= 10:
+            print("Небезпечно! Запас кисню низький!")
+        if self.energy <= 10:
+            print("Попередження! Рівень енергії критично низький!")
+        if self.oxygen > 0 and self.energy > 0:
+            print("Астронавт вижив у космосі!")
 
 
-class Auto:
-    def __init__(self, brand_list):
-        self.brand = choice(list(brand_list))
-        self.fuel = brand_list[self.brand]["fuel"]
-        self.strength = brand_list[self.brand]["strength"]
-        self.consumption = brand_list[self.brand]["consumption"]
+class Spaceship:
+    def __init__(self, name):
+        self.name = name
+        self.fuel = 100
+        self.hull_strength = 100
+        self.upgrades = []
 
-    def drive(self):
-        if self.strength > 0 and self.fuel >= self.consumption:
-            self.fuel -= self.consumption
-            self.strength -= 1
-            return True
+    def travel(self, planet):
+        if self.fuel >= 10:
+            self.fuel -= 10
+            print(f"Корабель {self.name} прилетів на {planet.name}.")
         else:
-            print("The car cannot move")
-            return False
+            print("Недостатньо пального для подорожі!")
+
+    def repair(self):
+        self.hull_strength = 100
+        print(f"Корабель {self.name} відремонтовано!")
+
+    def refuel(self, amount):
+        self.fuel += amount
+        print(f"Заправлено {amount} одиниць пального!")
+
+    def add_upgrade(self, upgrade):
+        self.upgrades.append(upgrade)
+        print(f"Корабель {self.name} отримав покращення: {upgrade}!")
 
 
-brands_of_car = {
-    "BMW": {"fuel": 100, "strength": 100, "consumption": 6},
-    "Lada": {"fuel": 50, "strength": 40, "consumption": 10},
-    "Volvo": {"fuel": 70, "strength": 150, "consumption": 8},
-    "Ferrari": {"fuel": 80, "strength": 120, "consumption": 14}
-}
+class Planet:
+    def __init__(self, name, resources, habitable, gravity, aliens=[]):
+        self.name = name
+        self.resources = resources
+        self.habitable = habitable
+        self.gravity = gravity
+        self.aliens = aliens
+
+    def discover_resources(self):
+        print(f"На {self.name} доступні ресурси: {', '.join(self.resources)}.")
+
+    def hostile_aliens(self):
+        return any(alien.attitude == "ворожий" for alien in self.aliens)
 
 
-class House:
-    def __init__(self):
-        self.mess = 0
-        self.food = 0
+class Alien:
+    def __init__(self, species, attitude, technology_level, trade_items=[]):
+        self.species = species
+        self.attitude = attitude
+        self.technology_level = technology_level
+        self.trade_items = trade_items
+
+    def trade(self, astronaut):
+        if self.trade_items:
+            item = choice(self.trade_items)
+            astronaut.inventory.append(item)
+            print(f"{self.species} передали {astronaut.name} {item}!")
+        else:
+            print(f"{self.species} не мають товарів для обміну.")
+
+    def attack(self, astronaut):
+        damage = randint(5, 20)
+        astronaut.energy -= damage
+        print(f"{self.species} атакували {astronaut.name}, завдавши {damage} шкоди!")
+
+    def negotiate(self, astronaut):
+        if randint(0, 1):
+            self.attitude = "дружній"
+            print(f"{self.species} вирішили не атакувати {astronaut.name}!")
+        else:
+            print(f"{self.species} залишаються ворожими!")
 
 
-class Job:
-    def __init__(self, job_list):
-        self.job = choice(list(job_list))
-        self.salary = job_list[self.job]["salary"]
-        self.gladness_less = job_list[self.job]["gladness_less"]
+ship = Spaceship("Galactic Explorer")
+astronaut = Astronaut("Max", ship)
+planet = Planet("Zeta-5", ["залізо", "кристали"], True, 1.2, [Alien("Zetarians", "дружній", 5, ["енерго-батарея"])])
 
-
-job_list = {
-    "Java developer": {"salary": 50, "gladness_less": 10},
-    "Python developer": {"salary": 50, "gladness_less": 3},
-    "C++ developer": {"salary": 45, "gladness_less": 25}
-}
-
-max = Astronaut("Max")
-
-for day in range(1, 8):
-    if max.live(day) == False:
-        break
+ship.travel(planet)
+astronaut.explore(planet)
+astronaut.mine_resources(planet)
+astronaut.upgrade_ship("залізо")
+astronaut.survive_in_space()
