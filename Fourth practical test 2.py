@@ -11,6 +11,5 @@ def validate_phone(phone):
         print("Помилка")
 
 
-# Запитуємо номер у користувача
 phone_number = input("Введіть номер телефону:")
 validate_phone(phone_number)
