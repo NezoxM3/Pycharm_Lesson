@@ -14,15 +14,13 @@ class Auto:
             self.passengers.append(passenger)
 
 
-        def print_passenger_name(self):
-            if self.passengers != []:
-                print(f"Names of {self.brand} {self.model} passenger")
-
-                for passenger in self.passengers:
+    def print_passenger_name(self):
+        if self.passengers != []:
+            print(f"Names of {self.brand} {self.model} passengers:")
+            for passenger in self.passengers:
                     print(passenger.name)
-
-            else:
-                print(f"There are no passengers in {self.brand} {self.model}")
+        else:
+            print(f"There are no passengers in {self.brand} {self.model}")
 
 
 nazar = Human("Nazar")
@@ -30,10 +28,11 @@ sasha = Human("Sasha")
 andriy = Human("Andriy")
 maks = Human("Maks")
 
+car = Auto("Toyota", "Camry")
+
 car.add_passenger(nazar)
 car.add_passenger(sasha)
 car.add_passenger(andriy)
 car.add_passenger(maks)
-
 
 car.print_passenger_name()
